@@ -5,14 +5,19 @@ import org.uaemex.gatewayservice.client.MatrixClient;
 import org.uaemex.gatewayservice.dto.MatrixRequestDto;
 import org.uaemex.gatewayservice.dto.MatrixRequestTypeDto;
 import org.uaemex.gatewayservice.dto.MatrixResponseDto;
+import org.uaemex.gatewayservice.validations.matrix.MatrixValidation;
 
 @Service
 public class MatrixService {
 
     private final MatrixClient client;
+    private final MatrixValidation validations;
 
-    public MatrixService(MatrixClient client){
+    public MatrixService(
+            MatrixClient client,
+            MatrixValidation validations){
         this.client = client;
+        this.validations = validations;
     }
 
 
@@ -26,19 +31,23 @@ public class MatrixService {
         };
     }
 
-    private MatrixResponseDto jaccardAndSockal(MatrixRequestDto m){
-        return new MatrixResponseDto(client.doJaccardAndSockal(m),null);
+    private MatrixResponseDto jaccardAndSockal(MatrixRequestDto request){
+        validations.validateBinary(request);
+        return new MatrixResponseDto(client.doJaccardAndSockal(request),null);
     }
 
     private MatrixResponseDto gowel(MatrixRequestDto request){
+        validations.validateGower(request);
         return new MatrixResponseDto(null,client.doGowel(request));
     }
 
     private MatrixResponseDto euclidean(MatrixRequestDto request){
+        validations.validateEuclidean(request);
         return new MatrixResponseDto(null,client.doEuclidean(request));
     }
 
     private MatrixResponseDto mahalanobis(MatrixRequestDto request){
+        validations.validateMahalanobis(request);
         return new MatrixResponseDto(null,client.doMahalanobis(request));
     }
 }
