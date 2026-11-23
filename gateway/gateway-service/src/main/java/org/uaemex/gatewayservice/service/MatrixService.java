@@ -24,8 +24,8 @@ public class MatrixService {
     public MatrixResponseDto resolveMatrix(MatrixRequestTypeDto m){
         MatrixRequestDto request = new MatrixRequestDto(m.m(),m.method());
         return switch (m.resolver()){
-            case JACCARD_SOCKAL -> jaccardAndSockal(request);
-            case GOWEL -> gowel(request);
+            case BINARY -> jaccardAndSockal(request);
+            case GOWER -> gowel(request);
             case EUCLIDEAN -> euclidean(request);
             case MAHALANOBIS -> mahalanobis(request);
         };

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Agrupamiento Jerárquico</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Agrupamiento Jerárquico</h1>
+            <p class="subtitle">API Gateway Multi-lenguaje (C · Java · Python)</p>
+        </header>
+
+        <!-- PASO 1: Subir Archivo -->
+        <section class="card-section" id="upload-section">
+            <h2>1. Cargar Archivo de Datos</h2>
+            <form id="uploadForm">
+                <input type="file" id="fileInput" name="File" accept=".csv,.txt,.xlsx,.xls,.json" required>
+                <button type="submit" id="submitBtn">Preparar y Limpiar Matriz</button>
+            </form>
+            <div id="loading" class="hidden">Procesando archivo...</div>
+            <div id="error-message" class="hidden error"></div>
+        </section>
+
+        <!-- PASO 2: Reporte de Limpieza + Nueva Matriz + Configuración -->
+        <!-- PASO 2: Preparar, Limpiar y Configurar -->
+        <section class="card-section hidden" id="editor-section">
+            <div class="section-header">
+                <h2>2. Matriz de Datos y Limpieza</h2>
+                <button id="resetBtn" class="secondary-btn">Cargar otro archivo</button>
+            </div>
+
+            <!-- Inciso b) Reporte de transformaciones -->
+            <div id="cleaning-report-box" class="report-box hidden">
+                <h3>Reporte de Validación y Transformación</h3>
+                <ul id="cleaning-report-list"></ul>
+            </div>
+            
+            <div id="cleaning-report-box" class="report-box hidden">
+                <h3>Historial de Errores y Transformaciones</h3>
+                <ul id="cleaning-report-list"></ul>
+            </div>
+
+            <!-- Valores repetidos de Matrix -->
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Filas</h3>
+                    <p id="editorRowsNum">-</p>
+                </div>
+                <div class="card">
+                    <h3>Total Variables</h3>
+                    <p id="editorTotalVars">-</p>
+                </div>
+                <div class="card">
+                    <h3>Valores Repetidos</h3>
+                    <div id="repetitiveVars" class="badges-container"><span>Ninguno</span></div>
+                </div>
+            </div>
+
+            <!-- Inciso c) Matriz editable / Nueva matriz limpia -->
+            <p class="subtitle">Verifica los valores o ajusta el tipo de cada columna y ejecuta la limpieza.</p>
+            <div class="table-container">
+                <table id="matrixEditorTable">
+                    <thead>
+                        <tr id="editor-headers"></tr>
+                    </thead>
+                    <tbody id="editor-body"></tbody>
+                </table>
+            </div>
+
+            <button id="cleanBtn" class="action-btn">1. Limpiar y Transformar Matriz</button>
+            <div id="clean-loading" class="hidden">Limpiando datos...</div>
+
+            <!-- Incisos d) y f) Selectores (se habilitan tras limpiar) -->
+            <div id="clustering-controls" class="hidden">
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="distanceMethod">Método de Distancia</label>
+                        <select id="distanceMethod">
+                            <option value="BINARY">Binario (Jaccard / Sokal - C)</option>
+                            <option value="GOWER">Gower (Mixto - Java)</option>
+                            <option value="EUCLIDEAN">Euclidiana (Cuantitativo - Python)</option>
+                            <option value="MAHALANOBIS">Mahalanobis (Cuantitativo - C)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="linkageMethod">Técnica de Eslabonamiento</label>
+                        <select id="linkageMethod">
+                            <option value="VMC">VMC (Vecino Más Cercano)</option>
+                            <option value="VML">VML (Vecino Más Lejano)</option>
+                            <option value="PROMEDIO">Promedio (Average)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="calculateBtn" class="action-btn">2. Calcular Distancias y Agrupamiento</button>
+                <div id="calc-loading" class="hidden">Calculando en microservicios...</div>
+            </div>
+        </section>
+        <!-- PASO 3: Resultados -->
+        <section class="card-section hidden" id="results-section">
+            <h2>3. Resultados del Agrupamiento</h2>
+
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Elementos (Filas)</h3>
+                    <p id="rowsNum">-</p>
+                </div>
+                <div class="card">
+                    <h3>Distancia</h3>
+                    <p id="usedDistance">-</p>
+                </div>
+                <div class="card">
+                    <h3>Eslabonamiento</h3>
+                    <p id="usedLinkage">-</p>
+                </div>
+            </div>
+
+            <!-- Inciso e) Matriz de Distancias -->
+             <!-- Selector Jaccard / Sokal (solo visible en modo Binario) -->
+            <div id="binary-tabs" class="tabs-container hidden">
+                <button type="button" id="tab-jaccard" class="tab-btn active">Índice de Jaccard</button>
+                <button type="button" id="tab-sokal" class="tab-btn">Índice de Sokal</button>
+            </div>
+            <h3>Matriz de Distancias</h3>
+            <div class="table-container">
+                <table id="distanceMatrixTable">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Inciso g) Lista de Relaciones Ordenadas -->
+            <h3>Lista de Relaciones (Menor a Mayor Distancia)</h3>
+            <div class="table-container">
+                <table id="relationsTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Elemento A</th>
+                            <th>Elemento B</th>
+                            <th>Distancia</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Inciso h) Historial de Agrupamiento -->
+            <h3>Historial de Agrupamiento</h3>
+            <div class="table-container">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>Paso</th>
+                            <th>Grupo A</th>
+                            <th>Grupo B</th>
+                            <th>Nuevo Cluster</th>
+                            <th>Distancia</th>
+                            <th>Tamaño</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Inciso h) Dendrograma -->
+            <h3>Dendrograma</h3>
+            <div class="dendrogram-wrapper">
+                <svg id="dendrogramSvg" viewBox="0 0 850 420"></svg>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

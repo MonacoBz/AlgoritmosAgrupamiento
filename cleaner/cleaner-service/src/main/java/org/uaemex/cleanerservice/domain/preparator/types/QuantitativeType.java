@@ -10,6 +10,7 @@ public class QuantitativeType implements PrepareDataType<QuantitativeData>{
 
     @Override
     public void prepareData(List<QuantitativeData> data, List<String> report) {
+        if (data == null || data.isEmpty())return;
         int totalRows = data.get(0).getData().size();
         int umbral = (int) (totalRows * 0.9);
 
