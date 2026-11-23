@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: matrix-service
+server:
+  port: 8082
+
+c:
+  binary:
+    path: /home/gerar/binarios/binary_calc
+  mahalanobis:
+    path: /mnt/c/Users/gerar/OneDrive/Documentos/Escuela/Noveno Semestre/Algoritmos Agrupamiento/Proyecto_Distancias/MatricesC/Mahalanobis/bin/mahalanobis
+python:
+  euclidean:
+    path: http://localhost:8000/api/matrix/euclidean
