@@ -47,6 +47,7 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
     document.getElementById('error-message').classList.add('hidden');
     document.getElementById('loading').classList.remove('hidden');
 
+    setLoading(true,'Procesando archivo...');
     try {
         const response = await fetch(CONFIG.PREPARE_URL, {
             method: 'POST',
@@ -67,6 +68,7 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
         showError(error.message);
     } finally {
         document.getElementById('loading').classList.add('hidden');
+        setLoading(false);
     }
 });
 
@@ -75,6 +77,7 @@ document.getElementById('cleanBtn').addEventListener('click', async function () 
     const matrixToClean = buildMatrixFromTable();
     document.getElementById('clean-loading').classList.remove('hidden');
 
+    setLoading(true,'Preparando el archivo.....')
     try {
         const response = await fetch(CONFIG.CLEAN_URL, {
             method: 'POST',
@@ -96,6 +99,7 @@ document.getElementById('cleanBtn').addEventListener('click', async function () 
         alert('⚠️ Error en limpieza:\n\n' + error.message);
     } finally {
         document.getElementById('clean-loading').classList.add('hidden');
+        setLoading(false);
     }
 });
 
@@ -112,7 +116,7 @@ document.getElementById('calculateBtn').addEventListener('click', async function
     };
 
     document.getElementById('calc-loading').classList.remove('hidden');
-
+    setLoading(true,'Preparando el archivo...')
     try {
         const response = await fetch(CONFIG.RESOLVE_URL, {
             method: 'POST',
@@ -131,6 +135,7 @@ document.getElementById('calculateBtn').addEventListener('click', async function
         alert('⚠️ Validación detenida:\n\n' + error.message);
     } finally {
         document.getElementById('calc-loading').classList.add('hidden');
+        setLoading(false);
     }
 });
 
@@ -447,6 +452,13 @@ function renderDendrogram(history, numLeaves) {
             'text-anchor': 'middle', 'font-size': 13, 'font-weight': 'bold', fill: '#1E293B'
         }, `E${leafId + 1}`);
     });
+}
+
+function setLoading(isLoading, message = 'Cargando datos...') {
+    const overlay = document.getElementById('loading-overlay');
+    const text = document.getElementById('loading-text');
+    text.textContent = message;
+    overlay.classList.toggle('hidden', !isLoading);
 }
 
 function showError(msg) {
